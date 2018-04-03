@@ -47,6 +47,20 @@ export async function startRemoteDebug(tree: AzureTreeDataProvider, node: IAzure
                 remoteRoot: "/home/site/wwwroot",
             }
             debugRemotePort = 9229;
+        } else if (siteConfig.linuxFxVersion.startsWith('DOCKER')) {
+            // Python demo
+            debugConfig = {
+                name: sessionId,
+                type: 'python',
+                request: 'attach',
+                host: 'localhost',
+                port: portNumber,
+                localRoot: vscode.workspace.rootPath,
+                remoteRoot: "/home/site/wwwroot/HttpTrigger",
+                "logToFile": true,
+                "secret": "my_secret"
+            }
+            debugRemotePort = 3000;
         } else {
             throw 'Azure Remote Debugging is not supported for this instance type'
         }
@@ -81,6 +95,9 @@ export async function startRemoteDebug(tree: AzureTreeDataProvider, node: IAzure
                 }
             }
         });
+
+        // Make sure app is running
+        //await pingFunctionApp(client);
 
         // Setup Debug Proxy Tunnel
         await new Promise(async (resolve: () => void, reject: (e: any) => void): Promise<void> => {
